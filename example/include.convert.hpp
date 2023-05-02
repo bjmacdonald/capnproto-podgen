@@ -1,6 +1,5 @@
 #pragma once
 
-#include <experimental/type_traits>
 #include <capnp/schema.h>
 
 #include "include.pod.hpp"
@@ -22,17 +21,17 @@ namespace inc {
 
 template <typename CT>
 auto _fromCapnp(CT v) {
-    if constexpr (std::is_same<CT, ::capnp::Void>::value) {
+    if constexpr (std::is_same_v<CT, ::capnp::Void>) {
         return std::monostate();
-    } else if constexpr (std::is_arithmetic<CT>::value) {
+    } else if constexpr (std::is_arithmetic_v<CT>) {
         return v;
-    } else if constexpr (std::is_same<CT, ::capnp::Text::Reader>::value) {
+    } else if constexpr (std::is_same_v<CT, ::capnp::Text::Reader>) {
         return static_cast<std::string>(v);
-    } else if constexpr (std::is_same<CT, ::capnp::Data::Reader>::value) {
+    } else if constexpr (std::is_same_v<CT, ::capnp::Data::Reader>) {
         auto bytes = v.asBytes();
         auto begin = reinterpret_cast<const podgen::Data::value_type*>(bytes.begin());
         return podgen::Data(begin, begin + bytes.size());
-    } else if constexpr (std::experimental::is_detected<podgen::is_iterable, CT>::value) {
+    } else if constexpr (podgen::is_iterable<CT>) {
         using CE = decltype(std::declval<CT>().begin().operator*());
         using E = decltype(_fromCapnp(std::declval<CE>()));
         std::vector<E> out;
@@ -54,13 +53,13 @@ auto _fromCapnpList(CL list) {
     T out;
 
     for (auto&& ce : list) {
-        if constexpr (std::is_same<CE, ::capnp::Text::Reader>::value) {
+        if constexpr (std::is_same_v<CE, ::capnp::Text::Reader>) {
             out.insert(out.end(), _fromCapnp(ce));
-        } else if constexpr (std::is_same<CE, ::capnp::Data::Reader>::value) {
+        } else if constexpr (std::is_same_v<CE, ::capnp::Data::Reader>) {
             out.insert(out.end(), _fromCapnp(ce));
-        } else if constexpr (std::experimental::is_detected<podgen::is_iterable, CE>::value) {
+        } else if constexpr (podgen::is_iterable<CE>) {
             out.insert(out.end(), _fromCapnpList<E>(ce));
-        } else if constexpr (std::experimental::is_detected<podgen::is_pair, E>::value) {
+        } else if constexpr (podgen::is_pair<E>) {
             out.insert(out.end(), std::make_pair(_fromCapnp(ce.getKey()), _fromCapnp(ce.getValue())));
         } else {
             out.insert(out.end(), _fromCapnp(ce));
@@ -75,13 +74,13 @@ auto _fromCapnpList(CL list) {
 
 template <typename T>
 auto _toCapnp(T v) {
-    if constexpr (std::is_arithmetic<T>::value) {
+    if constexpr (std::is_arithmetic_v<T>) {
         return v;
-    } else if constexpr (std::is_enum<T>::value) {
+    } else if constexpr (std::is_enum_v<T>) {
         return podToCapnp(v);
-    } else if constexpr (std::is_same<T, std::string>::value) {
+    } else if constexpr (std::is_same_v<T, std::string>) {
         return ::capnp::Text::Reader(v);
-    } else if constexpr (std::is_same<T, podgen::Data>::value) {
+    } else if constexpr (std::is_same_v<T, podgen::Data>) {
         return ::capnp::Data::Reader(reinterpret_cast<const uint8_t*>(v.data()), v.size());
     } else {
         return;
@@ -98,12 +97,12 @@ void _toCapnpList(B builder, const T& container) {
 
     uint i = 0;
     for (const auto& e : container) {
-        if constexpr (!std::is_same<void, decltype(_toCapnp(std::declval<E>()))>::value) {
+        if constexpr (!std::is_same_v<void, decltype(_toCapnp(std::declval<E>()))>) {
             builder.set(i, _toCapnp(e));
-        } else if constexpr (std::experimental::is_detected<podgen::is_pair, E>::value) {
+        } else if constexpr (podgen::is_pair<E>) {
             builder[i].setKey(_toCapnp(e.first));
             builder[i].setValue(_toCapnp(e.second));
-        } else if constexpr (std::experimental::is_detected<podgen::is_iterable, E>::value) {
+        } else if constexpr (podgen::is_iterable<E>) {
             auto b = builder.init(i, e.size());
             _toCapnpList(b, e);
         } else {

@@ -12,13 +12,13 @@
 constexpr size_t MAX_CONTAINER_PRINT = 256;
 
 /// default output function
-template <typename T, typename std::enable_if<podgen::is_outputtable<T>::value, T>::type* = nullptr>
+template <typename T, typename std::enable_if<podgen::is_outputtable<T>, T>::type* = nullptr>
 void _out(std::ostream& os, const T& o) {
-    if constexpr (std::is_same<T, int8_t>::value) {
+    if constexpr (std::is_same_v<T, int8_t>) {
         os << (int16_t) o;
-    } else if constexpr (std::is_same<T, uint8_t>::value) {
+    } else if constexpr (std::is_same_v<T, uint8_t>) {
         os << (uint16_t) o;
-    } else if constexpr (std::is_same<T, std::string>::value) {
+    } else if constexpr (std::is_same_v<T, std::string>) {
         os << '"' << o << '"';
     } else {
         os << o;
@@ -56,7 +56,7 @@ inline void _out(std::ostream& os, const podgen::Data& data) {
 }
 
 template <typename C,
-        typename std::enable_if<podgen::is_container<C>::value, C>::type* = nullptr>
+        typename std::enable_if<podgen::is_container<C>, C>::type* = nullptr>
 void _out(std::ostream& os, const C& c);
 
 template <typename A, typename B>
@@ -75,7 +75,7 @@ void _out_adl(std::ostream& os, const T& o);
 
 /// output any container that doesn't already have an operator<<
 template <typename C,
-          typename std::enable_if<podgen::is_container<C>::value, C>::type*>
+          typename std::enable_if<podgen::is_container<C>, C>::type*>
 void _out(std::ostream& os, const C& c) {
     bool first = true;
     if (c.size() > 16) {
@@ -89,7 +89,7 @@ void _out(std::ostream& os, const C& c) {
             os << ", ";
         }
 
-        if constexpr (std::experimental::is_detected<podgen::is_pair, decltype(o)>::value) {
+        if constexpr (podgen::is_pair<decltype(o)>) {
             // special case for maps
             os << '{';
             {{namespace}}::_out_adl(os, o.first);
@@ -137,7 +137,7 @@ void _out(std::ostream& os, const std::optional<T>& o) {
 
 template <typename T>
 void _out_adl(std::ostream& os, const T& o) {
-    if constexpr (podgen::is_ambiguous_adl<T>::value) {
+    if constexpr (podgen::is_ambiguous_adl<T>) {
         {{namespace}}::_out(os, o);
     } else {
         _out(os, o);

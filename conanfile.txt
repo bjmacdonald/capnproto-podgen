@@ -1,0 +1,6 @@
+[requires]
+eigen/3.4.0@ct/ct
+
+[generators]
+cmake_paths
+cmake_find_package_multi

@@ -1,0 +1,109 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 24,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "w64",
+      "description": "Sets generator and build, install directories.",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "c:/app/local/${presetName}",
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl"
+      },
+      "environment": {
+        "CMAKE_PREFIX_PATH": "c:/bjmd/proj/3rd-party/capnproto/build/${presetName}/c++/cmake"
+      },
+      "generator": "Ninja",
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio"
+        },
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [ "Windows" ],
+          "enableMicrosoftCodeAnalysis": true,
+          "enableClangTidyCodeAnalysis": false
+        }
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+       }
+    },
+    {
+      "name": "w64-cfg-dbg",
+      "description": "Windows Debug",
+      "inherits": [ "w64" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "w64-cfg-rel",
+      "description": "Windows Release",
+      "inherits": [ "w64" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "w64-cfg-rdb",
+      "description": "Windows RelWithDebInfo",
+      "inherits": [ "w64" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "lnx-base",
+      "description": "Sets generator, build and install directory",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [ "Linux" ]
+        }
+      }
+    },
+    {
+      "name": "lnx-warnings",
+      "description": "Enables dev warnings (-wdev)",
+      "inherits": "lnx-base",
+      "warnings": {
+        "dev": true
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "w64-build-dbg",
+      "configurePreset": "w64-cfg-dbg",
+      "description": "Windows x64 Debug Build",
+      "nativeToolOptions": [ "-k 0" ]
+    },
+    {
+      "name": "w64-build-rel",
+      "configurePreset": "w64-cfg-rel",
+      "description": "Windows x64 Release Build",
+      "nativeToolOptions": [ "-k 0" ]
+    },
+    {
+      "name": "w64-build-rdb",
+      "configurePreset": "w64-cfg-rel",
+      "description": "Windows x64 RelWithDebInfo Build",
+      "nativeToolOptions": [ "-k 0" ]
+    }
+  ]
+}

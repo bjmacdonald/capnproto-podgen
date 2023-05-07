@@ -26,7 +26,7 @@ inline uint64_t timestampToNanos(const Timestamp& timestamp) {
 inline void outTimestamp(std::ostream& os, const Timestamp& o) {
     static const auto tz = std::chrono::current_zone();
     const std::chrono::zoned_time zt{tz, o};
-    os << '[' << zt << ']';;
+    os << '{' << zt << '}';
 }
 
 /// Include an std::optional output function in case the field is declared as an optional.

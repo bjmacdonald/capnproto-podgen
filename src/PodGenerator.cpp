@@ -11,6 +11,9 @@
 #include "schema.hpp"
 #include "PodGenerator.hpp"
 
+// BMD This required for Windows
+using uint = capnp::uint;
+
 std::unordered_map<::capnp::schema::Type::Which, std::string> field_types {
     { ::capnp::schema::Type::Which::VOID, "std::monostate" },
     { ::capnp::schema::Type::Which::BOOL, "bool" },
@@ -2073,12 +2076,16 @@ void generateFromStruct(PodGenStream& gs, ::capnp::StructSchema schema, ::capnp:
     if (!gs.info.schemaParentOf.empty()) {
         if (!schema.getProto().getIsGeneric() || gs.hasField()) {
             auto saveField = gs.getField();
-
             recurseStructFields(schema, [&gs, &sgen, &processed](::capnp::StructSchema::Field f) {
                 if (ignore(f)) return;
                 if (f.getType().isStruct() && !isOptionalField(f)) {
                     auto s = f.getType().asStruct();
                     if (s.getProto().getIsGeneric()) {
+                        // BMD Generics don't work for some reason!
+                        auto parent = gs.findParentOf(s);
+                        if (!parent)
+                            std::cerr << "no parent " << s.getShortDisplayName().cStr() << std::endl;
+                        // BMD End
                         gs.setField(f);
                         generateFromStruct(gs, f.getType().asStruct(), *gs.findParentOf(s), sgen, processed);
                         gs.clearField();

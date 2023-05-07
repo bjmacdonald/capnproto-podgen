@@ -11,7 +11,14 @@
       "description": "Sets generator and build directories.",
       "hidden": true,
       "binaryDir": "${sourceDir}/build/${presetName}",
-      "generator": "Ninja"
+      "generator": "Ninja",
+      "warnings": {
+        "dev": true,
+        "deprecated": false,
+        "uninitialized": false,
+        "unusedCli": false,
+        "systemVars": false
+      }
     },
     {
       "name": "w64",

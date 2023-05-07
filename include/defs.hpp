@@ -6,6 +6,8 @@
 #include <variant>
 #include <iostream>
 #include <type_traits>
+#include <cstdint>
+#include <algorithm>
 
 
 namespace podgen {
@@ -31,14 +33,9 @@ concept is_variant = requires (T t) { t.valueless_by_exception(); };
 
 /// for identifying types that have a << operator defined
 template <typename T>
-using is_direct_output = decltype(std::declval<std::ostream&>().operator<<(std::declval<T>()));
-
-template <typename T>
-using is_indirect_output = decltype(operator<<(std::declval<std::ostream&>(), std::declval<T>()));
-
-template <typename T>
-concept is_outputtable = is_direct_output<T>::value || is_indirect_output<T>::value;
-
+concept is_outputtable = requires(std::ostream& os, T t) {
+    os << t;
+};
 
 /// container is iterable but doesn't have an output defined (excludes std::string)template <typename T>
 template <typename T>

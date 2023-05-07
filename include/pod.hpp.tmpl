@@ -12,7 +12,8 @@
 constexpr size_t MAX_CONTAINER_PRINT = 256;
 
 /// default output function
-template <typename T, typename std::enable_if<podgen::is_outputtable<T>, T>::type* = nullptr>
+//template <typename T, typename std::enable_if<podgen::is_outputtable<T>, T>::type* = nullptr>
+template <typename T> requires podgen::is_outputtable<T>
 void _out(std::ostream& os, const T& o) {
     if constexpr (std::is_same_v<T, int8_t>) {
         os << (int16_t) o;

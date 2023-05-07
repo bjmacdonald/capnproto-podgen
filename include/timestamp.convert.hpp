@@ -39,6 +39,10 @@ inline void outTimestamp(std::ostream& os, const std::optional<Timestamp>& o) {
     }
 }
 
+inline Timestamp timestampNow() {
+    return Timestamp{std::chrono::system_clock::now()};
+}
+
 } // namespace podgen
 
 

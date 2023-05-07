@@ -63,5 +63,5 @@ const timestamp : Converter = (
         from="podgen::timestampFromNanos",
         to="podgen::timestampToNanos",
         out="podgen::outTimestamp",
-        default="podgen::timestamp_clock::now()"
+        default="podgen::timestampNow()"
 ) $ignore;

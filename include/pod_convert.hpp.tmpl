@@ -64,19 +64,52 @@ auto _fromCapnpList(CL list) {
 // to
 
 template <typename T>
-auto _toCapnp(T v) {
-    if constexpr (std::is_arithmetic_v<T>) {
-        return v;
-    } else if constexpr (std::is_enum_v<T>) {
-        return podToCapnp(v);
-    } else if constexpr (std::is_same_v<T, std::string>) {
-        return ::capnp::Text::Reader(v);
-    } else if constexpr (std::is_same_v<T, podgen::Data>) {
-        return ::capnp::Data::Reader(reinterpret_cast<const uint8_t*>(v.data()), v.size());
-    } else {
-        return;
-    }
+concept is_text = std::is_same_v<std::remove_cv_t<T>, std::string>;
+
+template <typename T>
+concept is_data = std::is_same_v<std::remove_cv_t<T>, podgen::Data>;
+
+template <typename T>
+concept is_pass_by_ref = is_text<T> || is_data<T>;
+
+template <typename T>
+concept is_not_pass_by_ref = !is_pass_by_ref<T>;
+
+template <typename T>
+auto _toCapnp(T v) requires is_not_pass_by_ref<T>
+{
+  if constexpr (std::is_arithmetic_v<T>) {
+    return v;
+  } else if constexpr (std::is_enum_v<T>) {
+    return podToCapnp(v);
+  } else {
+    return;
+  }
 }
+
+template <typename T>
+auto _toCapnp(T &v) requires is_pass_by_ref<T>
+{
+  if constexpr (is_text<T>) {
+    return ::capnp::Text::Reader(v);
+  } else if constexpr (is_data<T>) {
+    return ::capnp::Data::Reader(reinterpret_cast<const uint8_t*>(v.data()), v.size());
+  } else {
+    return;
+  }
+}
+
+template<typename T>
+concept is_void_type = std::is_void_v<T>;
+
+template<typename T>
+concept is_not_void_type = !is_void_type<T>;
+
+template <typename T>
+concept is_buildable = requires(T t)
+{
+  { _toCapnp<T>(t) } -> is_not_void_type;
+};
 
 template <typename B, typename T>
 void _toCapnpList(B builder, const T& container) {
@@ -88,7 +121,7 @@ void _toCapnpList(B builder, const T& container) {
 
     ::capnp::uint i = 0;
     for (const auto& e : container) {
-        if constexpr (!std::is_same_v<void, decltype(_toCapnp(std::declval<E>()))>) {
+        if constexpr (is_buildable<E>) {
             builder.set(i, _toCapnp(e));
         } else if constexpr (podgen::is_pair<E>) {
             builder[i].setKey(_toCapnp(e.first));

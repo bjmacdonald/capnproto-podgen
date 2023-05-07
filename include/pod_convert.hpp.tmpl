@@ -86,7 +86,7 @@ void _toCapnpList(B builder, const T& container) {
         throw std::invalid_argument("capnp list builder must be initialized to source vector size");
     }
 
-    uint i = 0;
+    ::capnp::uint i = 0;
     for (const auto& e : container) {
         if constexpr (!std::is_same_v<void, decltype(_toCapnp(std::declval<E>()))>) {
             builder.set(i, _toCapnp(e));

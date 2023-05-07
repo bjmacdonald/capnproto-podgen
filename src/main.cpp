@@ -115,8 +115,7 @@ int do_main(const fs::path &outputFolder,
       }
 
       try {
-        std::cout << p << std::endl;
-        std::cout << "parseFromDirectory II  " << &parser << " " << p << std::endl;
+        std::cout << "  parsing import " << p << std::endl;
         auto importSchema = parser.parseFromDirectory(kjfs->getCurrent(),
                                                       kj::Path::parse(p.string()),
                                                       kjImportDirs);

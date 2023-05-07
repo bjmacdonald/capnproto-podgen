@@ -20,4 +20,9 @@ int main() {
         return 1;
     }
     capnp::writeMessageToFd(fileno(stdout), builder);
+    std::cout << std::endl;
+    std::cout << lists << std::endl;
+
+    test::TTest tt;
+    std::cout << tt << std::endl;
 }

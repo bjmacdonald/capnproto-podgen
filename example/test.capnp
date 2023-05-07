@@ -9,6 +9,16 @@ using Pod = import "/pod.capnp";
 
 const whatever : Text = "whatever";
 
+struct TTest {
+    nanos           @0 : UInt64 $Pod.defaultValue(value="podgen::timestampToNanos(std::chrono::system_clock::now())", hdr="<chrono>");
+    timestamp       @1 : UInt64 $Pod.converter(Pod.timestamp);
+    times : group {
+        start       @2 : UInt64 $Pod.converter(Pod.timestamp);
+        end         @3 : UInt64 $Pod.converter(Pod.timestamp);
+    }
+}
+
+
 struct Name {
     id      @0  : UInt16;
     name    @1  : Text;

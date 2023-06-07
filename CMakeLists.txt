@@ -9,6 +9,20 @@ include(conan-cmake)
 find_package(CapnProto REQUIRED CONFIG)
 include(CtlCapnProto)
 
+
+# ---------------------------------------------------------------------------------------
+# Header only target for templates folder + defs.hpp
+# ---------------------------------------------------------------------------------------
+#add_library(spdlog_header_only INTERFACE)
+#add_library(spdlog::spdlog_header_only ALIAS spdlog_header_only)
+#
+#target_include_directories(spdlog_header_only INTERFACE
+#    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+#    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+#target_link_libraries(spdlog_header_only INTERFACE Threads::Threads)
+
+
+
 ctl_capnp(CAPNP_SRCS CAPNP_HDRS include/pod.capnp)
 
 add_executable(podgen

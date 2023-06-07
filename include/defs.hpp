@@ -57,13 +57,13 @@ concept has_hasher = requires (T t) {
 };
 
 /// Convert enum value to string name
-template <typename T, typename std::enable_if<std::is_enum_v<T>>::type* = nullptr>
+template <typename T> requires std::is_enum_v<T>
 auto enumToName(T e, const std::vector<std::string>& names) {
   return names[static_cast<uint16_t>(e)];
 }
 
 /// Convert string name to enum value
-template <typename T, typename std::enable_if<std::is_enum_v<T>>::type* = nullptr>
+template <typename T> requires std::is_enum_v<T>
 std::optional<T> enumFromName(const std::string_view& name, const std::vector<std::string>& names) {
   auto it = std::find(names.begin(), names.end(), name);
   if (it != names.end()) {

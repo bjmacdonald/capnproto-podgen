@@ -38,3 +38,14 @@ test::Simple buildSimple() {
 
     return simple;
 }
+
+
+test::ReallySimple buildReallySimple() {
+  using namespace test;
+  ReallySimple simple;
+
+  simple.int8 = -3;
+  simple.sstring = "whatastring";
+
+  return simple;
+}

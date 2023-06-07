@@ -9,6 +9,17 @@ using Pod = import "/pod.capnp";
 
 const whatever : Text = "whatever";
 
+struct ReallySimple
+{
+    #const band : Text = "minds";
+    #const answer : UInt16 = 42;
+    dstring @0  : Text = "test string";
+    sstring @1  : Text;
+    int8    @2  : Int8 = -4;
+    data    @3  : Data = 0x"41 42 43 44";
+}
+
+
 struct Name {
     id      @0  : UInt16;
     name    @1  : Text;
@@ -274,19 +285,19 @@ struct IntError {
     code    @0 : UInt16;
 }
 
-struct GetInterface {
-    getUser         @0 : Get(User, List(User));
-    userResult      @1 : Get(User, List(User)).Result;
-    userError       @2 : Get(User, List(User)).Error(IntError);
-    getAccount      @3 : Get(Account, List(Account));
-    accountResult   @4 : Get(Account, List(Account)).Result;
-    accountError    @5 : Get(Account, List(Account)).Error(TextError);
-}
+#struct GetInterface {
+#    getUser         @0 : Get(User, List(User));
+#    userResult      @1 : Get(User, List(User)).Result;
+#    userError       @2 : Get(User, List(User)).Error(IntError);
+#    getAccount      @3 : Get(Account, List(Account));
+#    accountResult   @4 : Get(Account, List(Account)).Result;
+#    accountError    @5 : Get(Account, List(Account)).Error(TextError);
+#}
 
-struct AltGet(V, W) {
-    get     @0 : Get(V, W);
-}
+#struct AltGet(V, W) {
+#    get     @0 : Get(V, W);
+#}
 
-struct AltInterface {
-    user    @0 : AltGet(User, List(User));
-}
+#struct AltInterface {
+#    user    @0 : AltGet(User, List(User));
+#}

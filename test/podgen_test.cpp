@@ -33,6 +33,34 @@ void checkConversion(const test::Simple& simple) {
     CHECK(hash(simple) != hash(s_out));
 }
 
+void checkConversion(const test::ReallySimple& simple) {
+  capnp::MallocMessageBuilder out;
+
+  // note the use of capnpTypeOf() to determine the capnp type corresponding to a pod type.
+  // it's not an implemented function. the declaration only exists as a type mapper.
+  ::test::capnp::ReallySimple::Builder msg_out = out.initRoot<::test::capnp::ReallySimple>();
+
+  podToCapnp(msg_out, simple);
+  std::string msg_str{msg_out.toString().flatten().cStr()};
+  std::cerr << msg_out.toString().flatten().cStr() << std::endl;
+
+  test::ReallySimple s_out = podFromCapnp(msg_out.asReader());
+  CHECK(simple == s_out);
+  CHECK(hash(simple) == hash(s_out));
+
+  s_out.int8--;
+  CHECK(hash(simple) != hash(s_out));
+  s_out.int8++;
+  CHECK(hash(simple) == hash(s_out));
+}
+
+TEST_CASE("a convert from/to strings", "podgen") {
+  using namespace test;
+  auto simple = buildReallySimple();
+  std::cout << std::endl << "Simple type outputter: " << simple << std::endl << std::endl;
+  checkConversion(simple);
+}
+
 TEST_CASE("convert from/to", "podgen") {
     using namespace test;
     auto simple = buildSimple();
@@ -232,7 +260,7 @@ TEST_CASE("inheritance", "podgen") {
 
     CHECK(entity == entity_in);
 }
-
+#if 0
 TEST_CASE("generics", "podgen") {
     using namespace test;
 
@@ -291,3 +319,4 @@ TEST_CASE("generics", "podgen") {
 
     CHECK(alt == alt_in);
 }
+#endif

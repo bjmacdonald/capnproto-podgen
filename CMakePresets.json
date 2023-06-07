@@ -118,6 +118,11 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "addressSanitizerEnabled": true
+        }
+      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
